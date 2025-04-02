@@ -5,16 +5,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const fullResult = document.getElementById('full-result');
     const coupangLink = document.getElementById('coupang-link');
     
-    // URL 파라미터 확인하여 이미 쿠팡에 다녀왔는지 확인
-    const urlParams = new URLSearchParams(window.location.search);
-    const showFull = urlParams.get('showFull');
-    const savedData = localStorage.getItem('sajuData');
+    // 페이지 로드 시 URL 해시 확인
+    checkHashAndDisplayResults();
     
-    // 저장된 데이터가 있고 쿠팡에서 돌아온 경우 결과 표시
-    if (savedData && showFull === 'true') {
-        const data = JSON.parse(savedData);
-        displayResults(data.name, data.gender, data.birthdate, data.birthtime, data.result, true);
-    }
+    // URL 해시 변경 감지
+    window.addEventListener('hashchange', checkHashAndDisplayResults);
     
     // 사주풀이 폼 제출 처리
     form.addEventListener('submit', function(e) {
@@ -33,6 +28,19 @@ document.addEventListener('DOMContentLoaded', function() {
         // API 호출
         generateSajuResult(name, gender, birthdate, birthtime);
     });
+    
+    // 해시 확인 및 결과 표시 함수
+    function checkHashAndDisplayResults() {
+        if (window.location.hash === '#full') {
+            const savedData = sessionStorage.getItem('sajuData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                displayResults(data.name, data.gender, data.birthdate, data.birthtime, data.result, true);
+                // 해시 제거 (새로고침 시 계속 전체 결과가 표시되는 것 방지)
+                history.replaceState(null, null, ' ');
+            }
+        }
+    }
     
     // API 호출 함수
     async function callGptApi(name, gender, birthdate, birthtime) {
@@ -79,24 +87,24 @@ document.addEventListener('DOMContentLoaded', function() {
         resultPreview.innerHTML = previewText;
         fullResult.innerHTML = formattedResult;
         
-        // 쿠팡 파트너스 링크 설정 - 현재 URL에 showFull 파라미터 추가
-        const currentUrl = window.location.href.split('?')[0]; // 파라미터 제거
-        const returnUrl = currentUrl + '?showFull=true';
-        coupangLink.href = `https://link.coupang.com/a/cmrVHk?returnUrl=${encodeURIComponent(returnUrl)}`;
-        
         // 결과 섹션 표시
         resultSection.style.display = 'block';
         
         // 전체 결과 표시 여부
         if (showFullResults) {
             fullResult.style.display = 'block';
-            coupangLink.style.display = 'none'; // 버튼 숨기기
-            
-            // 추가 메시지 표시
-            const completeMsgDiv = document.createElement('div');
-            completeMsgDiv.className = 'complete-msg';
-            completeMsgDiv.innerHTML = '<p>쿠팡 방문을 통해 전체 사주풀이가 표시되었습니다.</p>';
-            fullResult.before(completeMsgDiv);
+            document.querySelector('.cta-section').style.display = 'none'; // CTA 섹션 숨기기
+        } else {
+            // 버튼 클릭 시 쿠팡으로 이동, 그 후 돌아올 때 #full 해시 사용
+            coupangLink.addEventListener('click', function() {
+                // 현재 URL + #full 해시를 세션 스토리지에 저장
+                sessionStorage.setItem('returnUrl', window.location.href.split('#')[0] + '#full');
+                
+                // 쿠팡 파트너스 링크로 이동
+                window.location.href = 'https://link.coupang.com/a/cmrVHk';
+                
+                return true; // 링크 이동 허용
+            });
         }
     }
     
@@ -113,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = {
                 name, gender, birthdate, birthtime, result: sajuResult
             };
-            localStorage.setItem('sajuData', JSON.stringify(data));
+            sessionStorage.setItem('sajuData', JSON.stringify(data));
             
         } catch (error) {
             console.error('사주풀이 생성 중 오류:', error);
