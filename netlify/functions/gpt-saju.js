@@ -34,12 +34,13 @@ exports.handler = async function(event, context) {
 
     const data = await response.json();
 
-    // GPT 응답 예외 처리
+    // 🔍 응답 전체를 로그로 출력 (Netlify Functions에서 확인 가능)
+    console.error("GPT 전체 응답:", JSON.stringify(data, null, 2));
+
     if (!data.choices || !data.choices[0] || !data.choices[0].message || !data.choices[0].message.content) {
-      console.error('OpenAI 응답 오류:', data);
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: 'GPT 응답이 예상과 다릅니다.' })
+        body: JSON.stringify({ error: 'GPT 응답이 예상과 다릅니다.', raw: data })
       };
     }
 
@@ -51,7 +52,7 @@ exports.handler = async function(event, context) {
     };
 
   } catch (error) {
-    console.error('Error:', error);
+    console.error('최종 처리 오류:', error);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: '사주풀이 생성 중 오류가 발생했습니다.' })
