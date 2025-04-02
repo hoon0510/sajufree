@@ -5,6 +5,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const fullResult = document.getElementById('full-result');
     const coupangLink = document.getElementById('coupang-link');
     
+    // URL 파라미터 확인하여 이미 쿠팡에 다녀왔는지 확인
+    const urlParams = new URLSearchParams(window.location.search);
+    const showFull = urlParams.get('showFull');
+    const savedData = localStorage.getItem('sajuData');
+    
+    // 저장된 데이터가 있고 쿠팡에서 돌아온 경우 결과 표시
+    if (savedData && showFull === 'true') {
+        const data = JSON.parse(savedData);
+        displayResults(data.name, data.gender, data.birthdate, data.birthtime, data.result, true);
+    }
+    
     // 사주풀이 폼 제출 처리
     form.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -50,33 +61,60 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // 결과 표시 함수
+    function displayResults(name, gender, birthdate, birthtime, sajuResult, showFullResults = false) {
+        // HTML 형식으로 포맷팅
+        const formattedResult = `
+            <h3>${name}님의 사주팔자 분석</h3>
+            <p><strong>기본 정보:</strong> ${gender}, ${birthdate} 출생, ${birthtime}</p>
+            
+            ${sajuResult.replace(/\n/g, '<br>')}
+        `;
+        
+        // 결과의 10%만 미리보기로 표시
+        const previewLength = Math.floor(formattedResult.length * 0.1);
+        const previewText = formattedResult.substring(0, previewLength) + "...";
+        
+        // 결과 표시
+        resultPreview.innerHTML = previewText;
+        fullResult.innerHTML = formattedResult;
+        
+        // 쿠팡 파트너스 링크 설정 - 현재 URL에 showFull 파라미터 추가
+        const currentUrl = window.location.href.split('?')[0]; // 파라미터 제거
+        const returnUrl = currentUrl + '?showFull=true';
+        coupangLink.href = `https://link.coupang.com/a/cmrVHk?returnUrl=${encodeURIComponent(returnUrl)}`;
+        
+        // 결과 섹션 표시
+        resultSection.style.display = 'block';
+        
+        // 전체 결과 표시 여부
+        if (showFullResults) {
+            fullResult.style.display = 'block';
+            coupangLink.style.display = 'none'; // 버튼 숨기기
+            
+            // 추가 메시지 표시
+            const completeMsgDiv = document.createElement('div');
+            completeMsgDiv.className = 'complete-msg';
+            completeMsgDiv.innerHTML = '<p>쿠팡 방문을 통해 전체 사주풀이가 표시되었습니다.</p>';
+            fullResult.before(completeMsgDiv);
+        }
+    }
+    
     // 사주풀이 결과 생성 함수
     async function generateSajuResult(name, gender, birthdate, birthtime) {
         try {
             // GPT API 호출
             const sajuResult = await callGptApi(name, gender, birthdate, birthtime);
             
-            // HTML 형식으로 포맷팅
-            const formattedResult = `
-                <h3>${name}님의 사주팔자 분석</h3>
-                <p><strong>기본 정보:</strong> ${gender}, ${birthdate} 출생, ${birthtime}</p>
-                
-                ${sajuResult.replace(/\n/g, '<br>')}
-            `;
-            
-            // 결과의 10%만 미리보기로 표시
-            const previewLength = Math.floor(formattedResult.length * 0.1);
-            const previewText = formattedResult.substring(0, previewLength) + "...";
-            
             // 결과 표시
-            resultPreview.innerHTML = previewText;
-            fullResult.innerHTML = formattedResult;
+            displayResults(name, gender, birthdate, birthtime, sajuResult);
             
-            // 실제 쿠팡 파트너스 링크 설정
-            coupangLink.href = "https://link.coupang.com/a/cmrVHk";
+            // 데이터 저장 (쿠팡에서 돌아올 때 사용)
+            const data = {
+                name, gender, birthdate, birthtime, result: sajuResult
+            };
+            localStorage.setItem('sajuData', JSON.stringify(data));
             
-            // 결과 섹션 표시
-            resultSection.style.display = 'block';
         } catch (error) {
             console.error('사주풀이 생성 중 오류:', error);
             resultPreview.innerHTML = '<p>사주풀이 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>';
