@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
             fullResult.innerHTML = formattedResult;
             
             // 쿠팡 파트너스 링크 설정
-            coupangLink.href = "https://coupa.ng/your-affiliate-link";
+            coupangLink.href = "https://link.coupang.com/a/cmrVHk";
             
             // 결과 섹션 표시
             resultSection.style.display = 'block';
