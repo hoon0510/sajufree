@@ -5,11 +5,10 @@ exports.handler = async function(event, context) {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
-  
+
   try {
     const { name, gender, birthdate, birthtime } = JSON.parse(event.body);
-    
-    // OpenAI API 호출
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -32,16 +31,25 @@ exports.handler = async function(event, context) {
         max_tokens: 2000
       })
     });
-    
+
     const data = await response.json();
-    
+
+    // GPT 응답 예외 처리
+    if (!data.choices || !data.choices[0] || !data.choices[0].message || !data.choices[0].message.content) {
+      console.error('OpenAI 응답 오류:', data);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'GPT 응답이 예상과 다릅니다.' })
+      };
+    }
+
     return {
       statusCode: 200,
-      body: JSON.stringify({ 
-        result: data.choices[0].message.content 
+      body: JSON.stringify({
+        result: data.choices[0].message.content
       })
     };
-    
+
   } catch (error) {
     console.error('Error:', error);
     return {
