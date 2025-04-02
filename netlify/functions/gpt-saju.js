@@ -16,7 +16,7 @@ exports.handler = async function(event, context) {
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-3.5-turbo', // ✅ 모델 변경 (속도 빠름)
         messages: [
           {
             role: 'system',
@@ -34,7 +34,7 @@ exports.handler = async function(event, context) {
 
     const data = await response.json();
 
-    // 🔍 응답 전체를 로그로 출력 (Netlify Functions에서 확인 가능)
+    // 🔍 Netlify Functions 로그에서 응답 확인용
     console.error("GPT 전체 응답:", JSON.stringify(data, null, 2));
 
     if (!data.choices || !data.choices[0] || !data.choices[0].message || !data.choices[0].message.content) {
