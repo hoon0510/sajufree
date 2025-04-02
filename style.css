@@ -1,0 +1,175 @@
+/* 기본 스타일 리셋 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f9f7f5;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 헤더 스타일 */
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 20px 0;
+    border-bottom: 1px solid #eaeaea;
+}
+
+header h1 {
+    color: #5a3b2d;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+/* 입력 폼 스타일 */
+.input-form {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 40px;
+}
+
+.input-form h2 {
+    color: #5a3b2d;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #5a3b2d;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="date"]:focus,
+.form-group select:focus {
+    border-color: #9c7a65;
+    outline: none;
+}
+
+.radio-group {
+    display: flex;
+    gap: 20px;
+}
+
+.radio-group input[type="radio"] {
+    margin-right: 5px;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: #9c7a65;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+    background-color: #7d6253;
+}
+
+/* 결과 섹션 스타일 */
+.result-section {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.result-section h2 {
+    color: #5a3b2d;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.result-preview {
+    padding: 20px;
+    background-color: #f9f7f5;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    line-height: 1.8;
+}
+
+.cta-section {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 14px 30px;
+    background-color: #e57373;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.cta-button:hover {
+    background-color: #c62828;
+}
+
+.full-result {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f9f7f5;
+    border-radius: 8px;
+    line-height: 1.8;
+}
+
+/* 푸터 스타일 */
+footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #eaeaea;
+    color: #777;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .input-form, .result-section {
+        padding: 20px;
+    }
+}
