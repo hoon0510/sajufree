@@ -72,22 +72,11 @@ document.addEventListener('DOMContentLoaded', function() {
             resultPreview.innerHTML = previewText;
             fullResult.innerHTML = formattedResult;
             
-            // 쿠팡 파트너스 링크 설정
+            // 실제 쿠팡 파트너스 링크 설정
             coupangLink.href = "https://link.coupang.com/a/cmrVHk";
             
             // 결과 섹션 표시
             resultSection.style.display = 'block';
-            
-            // 쿠팡 링크 클릭 시 전체 결과 표시 (테스트용)
-            coupangLink.addEventListener('click', function(e) {
-                // 테스트 중일 때만 사용, 실제 서비스에서는 제거
-                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                    e.preventDefault();
-                    fullResult.style.display = 'block';
-                    this.textContent = '전체 결과가 표시되었습니다';
-                    this.style.backgroundColor = '#4CAF50';
-                }
-            });
         } catch (error) {
             console.error('사주풀이 생성 중 오류:', error);
             resultPreview.innerHTML = '<p>사주풀이 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>';
