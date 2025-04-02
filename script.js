@@ -23,6 +23,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (savedData && wasAtCoupang === 'true') {
             const data = JSON.parse(savedData);
             displayResults(data.name, data.gender, data.birthdate, data.birthtime, data.result, true);
+
+            // 명확하게 상태 재설정
+            resultPreview.style.display = 'none';
+            fullResult.style.display = 'block';
+            document.querySelector('.cta-section').style.display = 'none';
+
             sessionStorage.removeItem('wasAtCoupang');
         }
     }
@@ -36,6 +42,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const birthtime = document.getElementById('birthtime').value;
 
         resultPreview.innerHTML = "<p>사주풀이 결과를 생성 중입니다...</p>";
+        resultPreview.style.display = 'block';
+        fullResult.style.display = 'none';
         resultSection.style.display = 'block';
 
         generateSajuResult(name, gender, birthdate, birthtime);
@@ -80,10 +88,13 @@ document.addEventListener('DOMContentLoaded', function() {
         resultSection.style.display = 'block';
 
         if (showFullResults) {
+            resultPreview.style.display = 'none';
             fullResult.style.display = 'block';
             document.querySelector('.cta-section').style.display = 'none';
         } else {
-            // JS로 링크 이동 제어
+            resultPreview.style.display = 'block';
+            fullResult.style.display = 'none';
+
             coupangLink.addEventListener('click', function(e) {
                 e.preventDefault();
                 sessionStorage.setItem('wasAtCoupang', 'true');
