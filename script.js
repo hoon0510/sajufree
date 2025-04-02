@@ -5,11 +5,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const fullResult = document.getElementById('full-result');
     const coupangLink = document.getElementById('coupang-link');
     
-    // 페이지 로드 시 URL 해시 확인
-    checkHashAndDisplayResults();
+    // 페이지 로드 시 확인 - 뒤로가기로 돌아왔는지 체크
+    checkPageVisibility();
     
-    // URL 해시 변경 감지
-    window.addEventListener('hashchange', checkHashAndDisplayResults);
+    // 뒤로가기 감지
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            // 브라우저 캐시에서 페이지가 복원됨 (뒤로가기 사용)
+            checkPageVisibility();
+        }
+    });
+    
+    // 페이지 가시성 확인 함수
+    function checkPageVisibility() {
+        const savedData = sessionStorage.getItem('sajuData');
+        const wasAtCoupang = sessionStorage.getItem('wasAtCoupang');
+        
+        if (savedData && wasAtCoupang === 'true') {
+            const data = JSON.parse(savedData);
+            displayResults(data.name, data.gender, data.birthdate, data.birthtime, data.result, true);
+            // 상태 초기화
+            sessionStorage.removeItem('wasAtCoupang');
+        }
+    }
     
     // 사주풀이 폼 제출 처리
     form.addEventListener('submit', function(e) {
@@ -28,19 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // API 호출
         generateSajuResult(name, gender, birthdate, birthtime);
     });
-    
-    // 해시 확인 및 결과 표시 함수
-    function checkHashAndDisplayResults() {
-        if (window.location.hash === '#full') {
-            const savedData = sessionStorage.getItem('sajuData');
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                displayResults(data.name, data.gender, data.birthdate, data.birthtime, data.result, true);
-                // 해시 제거 (새로고침 시 계속 전체 결과가 표시되는 것 방지)
-                history.replaceState(null, null, ' ');
-            }
-        }
-    }
     
     // API 호출 함수
     async function callGptApi(name, gender, birthdate, birthtime) {
@@ -95,15 +100,15 @@ document.addEventListener('DOMContentLoaded', function() {
             fullResult.style.display = 'block';
             document.querySelector('.cta-section').style.display = 'none'; // CTA 섹션 숨기기
         } else {
-            // 버튼 클릭 시 쿠팡으로 이동, 그 후 돌아올 때 #full 해시 사용
+            // 쿠팡 파트너스 링크 설정
+            coupangLink.href = "https://link.coupang.com/a/cmrVHk";
+            
+            // target="_blank" 속성 제거 - 같은 탭에서 열리도록 함
+            coupangLink.removeAttribute('target');
+            
+            // 버튼 클릭 시 쿠팡으로 이동했다는 표시 저장
             coupangLink.addEventListener('click', function() {
-                // 현재 URL + #full 해시를 세션 스토리지에 저장
-                sessionStorage.setItem('returnUrl', window.location.href.split('#')[0] + '#full');
-                
-                // 쿠팡 파트너스 링크로 이동
-                window.location.href = 'https://link.coupang.com/a/cmrVHk';
-                
-                return true; // 링크 이동 허용
+                sessionStorage.setItem('wasAtCoupang', 'true');
             });
         }
     }
